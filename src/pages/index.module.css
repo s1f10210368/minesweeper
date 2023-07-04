@@ -115,3 +115,25 @@
   height: 1em;
   margin-left: 0.5rem;
 }
+
+/* ~はReact限定で使用可能 */
+.stone {
+  width: 30px;
+  height: 30px;
+  background: url('~/assets/images/icons.png') no-repeat;
+}
+
+.board {
+  width: 360px;
+  height: 360px;
+  background-color: darkgray;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cell {
+  width: calc(360px / 9);
+  height: calc(360px / 9);
+  border: 1px solid black;
+}
