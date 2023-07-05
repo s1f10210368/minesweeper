@@ -9,13 +9,13 @@ const Home = () => {
 
   const [userInput, setUserInput] = useState<(0 | 1 | 2 | 3)[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const bombCount = 10;
@@ -35,10 +35,7 @@ const Home = () => {
 
   //ゲーム開始
   const isPlaying = userInput.some((row) => row.some((input) => input !== 0));
-  //爆発
-  const isFailure = userInput.some((row, y) =>
-    row.some((input, x) => input === 1 && bombMap[y][x] === 1)
-  );
+
   // -1 -> 石
   // 0 -> 画像なしセル
   // 1~8 -> 数字セル
@@ -69,8 +66,35 @@ const Home = () => {
     updatedUserInput[y][x] = 1; // 左クリック設定
     setUserInput(updatedUserInput);
 
+    // 最初のクリックの場合のみボムマップを設定
+    if (userInput[y][x] === 0) {
+      // ボムマップを初期化
+      const updatedBombMap = Array(9)
+        .fill(0)
+        .map(() => Array(9).fill(0));
+
+      // ボムの数
+      const bombCount = 10;
+
+      // ボムを配置
+      let bombsPlaced = 0;
+      while (bombsPlaced < bombCount) {
+        const bombX = Math.floor(Math.random() * 9);
+        const bombY = Math.floor(Math.random() * 9);
+
+        // ボムが既に配置されていないかをチェック
+        if (updatedBombMap[bombY][bombX] !== 11 && updatedUserInput[bombY][bombX] !== 1) {
+          updatedBombMap[bombY][bombX] = 1;
+          bombsPlaced++;
+        }
+      }
+
+      // bombMapを更新
+      setBombMap(updatedBombMap);
+    }
+
     // ボムがあるセルをクリックしたか判定
-    const isFailure = userInput[y][x] === 1 && bombMap[y][x] === 1;
+    const isFailure = userInput[y][x] === 1 && bombMap[y][x] === 11;
     if (isFailure) {
       // ゲームオーバーの処理を実行
       console.log('Game Over');
@@ -114,7 +138,7 @@ const Home = () => {
     <div className={styles.container}>
       <div className={styles.board}>
         {userInput.map((row, y) =>
-          row.map((color, x) => (
+          row.map((_, x) => (
             <div className={styles.cell} key={`${x}-${y}`} onClick={() => onClick(x, y)}>
               {userInput[y][x] !== 0 && <div className={styles.stone} />}
             </div>
