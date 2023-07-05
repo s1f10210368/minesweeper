@@ -15,10 +15,10 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const bomCount = 10;
+  const bombCount = 10;
   // 0 -> ボムなし
   // 1 -> ボム有
   const [bombMap, setBombMap] = useState([
@@ -34,19 +34,18 @@ const Home = () => {
   ]);
 
   //ゲーム開始
-  //const isPlaying = userInputs.some((row) => row.some((input) => input !==0));
+  const isPlaying = userInput.some((row) => row.some((input) => input !== 0));
   //爆発
-  //const isFailure = userInputs.some((row, y) =>
-  //  row.some((input, x) => input === 1 && bombMap[y][x] === 1)
-  //);
-
+  const isFailure = userInput.some((row, y) =>
+    row.some((input, x) => input === 1 && bombMap[y][x] === 1)
+  );
   // -1 -> 石
   // 0 -> 画像なしセル
   // 1~8 -> 数字セル
   // 9 -> 石＋はてな
   // 10 -> 石＋旗
   // 11 -> ボムセル
-  const board: number[][] = [];
+  const board: number[][] = Array.from({ length: 9 });
 
   //8方向辞書
   const directions = [
@@ -65,6 +64,50 @@ const Home = () => {
 
   const onClick = (x: number, y: number) => {
     console.log(x, y);
+    // userInputを更新
+    const updatedUserInput = [...userInput];
+    updatedUserInput[y][x] = 1; // 左クリック設定
+    setUserInput(updatedUserInput);
+
+    // ボムがあるセルをクリックしたか判定
+    const isFailure = userInput[y][x] === 1 && bombMap[y][x] === 1;
+    if (isFailure) {
+      // ゲームオーバーの処理を実行
+      console.log('Game Over');
+      return;
+    }
+
+    // クリックされたセルが0の場合、周囲のセルを再帰的に開ける処理
+    if (userInput[y][x] === 0) {
+      // 関数の実装
+      addZeroAroundZero(x, y);
+    }
+  };
+
+  const addZeroAroundZero = (x: number, y: number) => {
+    // 開いたセルの座標を設定
+    const updatedUserInput = [...userInput];
+    updatedUserInput[y][x] = 1;
+    setUserInput(updatedUserInput);
+
+    // 再帰的に周囲のセルを開ける処理を実行
+    for (const [dx, dy] of directions) {
+      const newX = x + dx;
+      const newY = y + dy;
+
+      // セルの範囲チェック
+      if (newX >= 0 && newX < userInput[0].length && newY >= 0 && newY < userInput.length) {
+        // 既に開かれたセルはスキップ
+        if (updatedUserInput[newY][newX] !== 0) {
+          continue;
+        }
+
+        // クリックされたセルが0の場合、再帰的に周囲のセルを開ける
+        if (userInput[y][x] === 0) {
+          addZeroAroundZero(newX, newY);
+        }
+      }
+    }
   };
 
   return (
@@ -73,7 +116,7 @@ const Home = () => {
         {userInput.map((row, y) =>
           row.map((color, x) => (
             <div className={styles.cell} key={`${x}-${y}`} onClick={() => onClick(x, y)}>
-              {color !== 0 && <div className={styles.stone} />}
+              {userInput[y][x] !== 0 && <div className={styles.stone} />}
             </div>
           ))
         )}
