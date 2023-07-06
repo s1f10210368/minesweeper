@@ -70,7 +70,7 @@ const Home = () => {
       // セルの範囲チェック
       if (newX >= 0 && newX < userInput[0].length && newY >= 0 && newY < userInput.length) {
         // ボムセルか判定
-        if (bombMap[newY][newX] === 1) {
+        if (bombMap[newY][newX] === 11) {
           count++;
         }
       }
@@ -79,7 +79,7 @@ const Home = () => {
     return count;
   };
 
-  const startGame = () => {
+  const isStarted = () => {
     const bombCount = 10;
     // ボムマップを初期化
     const updatedBombMap = Array(9)
@@ -93,8 +93,8 @@ const Home = () => {
       const bombY = Math.floor(Math.random() * 9);
 
       // ボムが既に配置されていないかをチェック
-      if (updatedBombMap[bombY][bombX] !== 1) {
-        updatedBombMap[bombY][bombX] = 1;
+      if (updatedBombMap[bombY][bombX] !== 11) {
+        updatedBombMap[bombY][bombX] = 11;
         bombsPlaced++;
       }
     }
@@ -108,11 +108,11 @@ const Home = () => {
 
     // 最初のクリックの場合のみボムマップを生成
     if (!isPlaying) {
-      startGame();
+      isStarted();
     }
 
     // ボムがあるセルをクリックしたか判断
-    if (bombMap[y][x] === 1) {
+    if (bombMap[y][x] === 11) {
       // ゲームオーバーの処理を実行
       console.log('Game Over');
       setUserInput((prev) => {
@@ -125,6 +125,9 @@ const Home = () => {
 
     // ボムがないセルなので周囲のボムの数を計算
     const count = countBombsAround(x, y);
+    if (count === 0) {
+      addZeroAroundZero(x, y);
+    }
     // ユーザー入力にボムの数を設定
     setUserInput((prev) => {
       const newInput = [...prev];
@@ -134,26 +137,26 @@ const Home = () => {
   };
 
   const addZeroAroundZero = (x: number, y: number) => {
-    // 開いたセルの座標を設定
-    const updatedUserInput = [...userInput];
-    updatedUserInput[y][x] = 1;
-    setUserInput(updatedUserInput);
+    setUserInput((prev) => {
+      const newInput = [...prev];
+      newInput[y][x] = 1;
+      return newInput;
+    });
 
-    // 再帰的に周囲のセルを開ける処理を実行
-    for (const [dx, dy] of directions) {
-      const newX = x + dx;
-      const newY = y + dy;
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        const nx = x + dx;
+        const ny = y + dy;
 
-      // セルの範囲チェック
-      if (newX >= 0 && newX < userInput[0].length && newY >= 0 && newY < userInput.length) {
-        // 既に開かれたセルはスキップ
-        if (updatedUserInput[newY][newX] !== 0) {
-          continue;
-        }
-
-        // クリックされたセルが0の場合、再帰的に周囲のセルを開ける
-        if (userInput[y][x] === 0) {
-          addZeroAroundZero(newX, newY);
+        if (
+          nx >= 0 &&
+          nx < 9 &&
+          ny >= 0 &&
+          ny < 9 &&
+          userInput[ny][nx] === 0 &&
+          countBombsAround(nx, ny) === 0
+        ) {
+          addZeroAroundZero(nx, ny);
         }
       }
     }
