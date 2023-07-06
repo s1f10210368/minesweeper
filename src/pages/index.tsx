@@ -59,53 +59,78 @@ const Home = () => {
   //for (){
   //board + directions + userInput +
 
-  const onClick = (x: number, y: number) => {
-    console.log(x, y);
-    // userInputを更新
-    const updatedUserInput = [...userInput];
-    updatedUserInput[y][x] = 1; // 左クリック設定
-    setUserInput(updatedUserInput);
+  // ボムの数をカウント
+  const countBombsAround = (x: number, y: number) => {
+    let count = 0;
 
-    // 最初のクリックの場合のみボムマップを設定
-    if (userInput[y][x] === 0) {
-      // ボムマップを初期化
-      const updatedBombMap = Array(9)
-        .fill(0)
-        .map(() => Array(9).fill(0));
+    for (const [dx, dy] of directions) {
+      const newX = x + dx;
+      const newY = y + dy;
 
-      // ボムの数
-      const bombCount = 10;
-
-      // ボムを配置
-      let bombsPlaced = 0;
-      while (bombsPlaced < bombCount) {
-        const bombX = Math.floor(Math.random() * 9);
-        const bombY = Math.floor(Math.random() * 9);
-
-        // ボムが既に配置されていないかをチェック
-        if (updatedBombMap[bombY][bombX] !== 11 && updatedUserInput[bombY][bombX] !== 1) {
-          updatedBombMap[bombY][bombX] = 1;
-          bombsPlaced++;
+      // セルの範囲チェック
+      if (newX >= 0 && newX < userInput[0].length && newY >= 0 && newY < userInput.length) {
+        // ボムセルか判定
+        if (bombMap[newY][newX] === 1) {
+          count++;
         }
       }
-
-      // bombMapを更新
-      setBombMap(updatedBombMap);
     }
 
-    // ボムがあるセルをクリックしたか判定
-    const isFailure = userInput[y][x] === 1 && bombMap[y][x] === 11;
-    if (isFailure) {
+    return count;
+  };
+
+  const startGame = () => {
+    const bombCount = 10;
+    // ボムマップを初期化
+    const updatedBombMap = Array(9)
+      .fill(0)
+      .map(() => Array(9).fill(0));
+
+    // ボムを配置
+    let bombsPlaced = 0;
+    while (bombsPlaced < bombCount) {
+      const bombX = Math.floor(Math.random() * 9);
+      const bombY = Math.floor(Math.random() * 9);
+
+      // ボムが既に配置されていないかをチェック
+      if (updatedBombMap[bombY][bombX] !== 1) {
+        updatedBombMap[bombY][bombX] = 1;
+        bombsPlaced++;
+      }
+    }
+
+    // bombMapを更新
+    setBombMap(updatedBombMap);
+  };
+
+  const onClick = (x: number, y: number) => {
+    if (userInput[y][x] !== 0) return; // 既に開かれたセルをクリックした場合はなにもしない
+
+    // 最初のクリックの場合のみボムマップを生成
+    if (!isPlaying) {
+      startGame();
+    }
+
+    // ボムがあるセルをクリックしたか判断
+    if (bombMap[y][x] === 1) {
       // ゲームオーバーの処理を実行
       console.log('Game Over');
+      setUserInput((prev) => {
+        const newInput = [...prev];
+        newInput[y][x] = 11;
+        return newInput;
+      });
       return;
     }
 
-    // クリックされたセルが0の場合、周囲のセルを再帰的に開ける処理
-    if (userInput[y][x] === 0) {
-      // 関数の実装
-      addZeroAroundZero(x, y);
-    }
+    // ボムがないセルなので周囲のボムの数を計算
+    const count = countBombsAround(x, y);
+    // ユーザー入力にボムの数を設定
+    setUserInput((prev) => {
+      const newInput = [...prev];
+      newInput[y][x] = count + 1; // countが0の場合は空のセルを意味する
+      return newInput;
+    });
   };
 
   const addZeroAroundZero = (x: number, y: number) => {
@@ -138,9 +163,10 @@ const Home = () => {
     <div className={styles.container}>
       <div className={styles.board}>
         {userInput.map((row, y) =>
-          row.map((_, x) => (
+          row.map((cell, x) => (
             <div className={styles.cell} key={`${x}-${y}`} onClick={() => onClick(x, y)}>
-              {userInput[y][x] !== 0 && <div className={styles.stone} />}
+              {cell !== 0 &&
+                (cell === 1 ? <div className={styles.stone} /> : <div>{cell - 1}</div>)}
             </div>
           ))
         )}
