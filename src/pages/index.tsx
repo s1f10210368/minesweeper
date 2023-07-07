@@ -56,8 +56,35 @@ const Home = () => {
     [-1, 1],
   ];
 
-  //for (){
-  //board + directions + userInput +
+
+  let zeroList: { x: number; y: number }[]
+  //爆弾のないマスまとめ
+  for () {
+    zeroList = // board + directions + userInputs + bombMap
+  } 
+  let openedCount: number 
+  //空いたマスの数(周囲に爆弾あるマスを含む)
+  for () {
+    openedCount = // board
+  }
+  const isSuccess =; // openedCount + bombCount = 81
+  let isFailure: boolean = false;
+  //タイマーを止める、上の顔を変更する
+  for () {
+    isFailure = // userInputs + bombMap
+  }
+  let isStarted : boolean = false;  //booleanはtrueとfalseしか入らない
+  // クリックで値を切り替えてタイマーをスタートする
+  for () {
+    isStarted = // userInputs
+  }
+
+
+  // isFailure = true && isStarted = true => タイマーストップ + 画面上の爆弾全て表示 + 顔ボタン以外押せなく + 押してしまった爆弾の背景を赤く
+  //以下が実装したい関数
+
+
+  const addZeroAroundZero = (hoge: fuga) => ... // 再帰関数
 
   // ボムの数をカウント
   const countBombsAround = (x: number, y: number) => {
@@ -75,107 +102,57 @@ const Home = () => {
         }
       }
     }
+  }
 
-    return count;
-  };
-
-  const isStarted = () => {
-    const bombCount = 10;
-    // ボムマップを初期化
-    const updatedBombMap = Array(9)
-      .fill(0)
-      .map(() => Array(9).fill(0));
-
-    // ボムを配置
-    let bombsPlaced = 0;
-    while (bombsPlaced < bombCount) {
-      const bombX = Math.floor(Math.random() * 9);
-      const bombY = Math.floor(Math.random() * 9);
-
-      // ボムが既に配置されていないかをチェック
-      if (updatedBombMap[bombY][bombX] !== 11) {
-        updatedBombMap[bombY][bombX] = 11;
-        bombsPlaced++;
-      }
-    }
-
-    // bombMapを更新
-    setBombMap(updatedBombMap);
-  };
-
-  const onClick = (x: number, y: number) => {
-    if (userInput[y][x] !== 0) return; // 既に開かれたセルをクリックした場合はなにもしない
-
-    // 最初のクリックの場合のみボムマップを生成
-    if (!isPlaying) {
-      isStarted();
-    }
-
-    // ボムがあるセルをクリックしたか判断
-    if (bombMap[y][x] === 11) {
-      // ゲームオーバーの処理を実行
-      console.log('Game Over');
-      setUserInput((prev) => {
-        const newInput = [...prev];
-        newInput[y][x] = 11;
-        return newInput;
-      });
+  const clickStone = (x: number, y: number) => {
+    // isFailureがtrueなら終了
+    if(isFailure === true){
       return;
     }
+    userInput[y][x] = 1;
+    if (isStarted === false){
+      isStarted =true;
 
-    // ボムがないセルなので周囲のボムの数を計算
-    const count = countBombsAround(x, y);
-    if (count === 0) {
-      addZeroAroundZero(x, y);
-    }
-    // ユーザー入力にボムの数を設定
-    setUserInput((prev) => {
-      const newInput = [...prev];
-      newInput[y][x] = count + 1; // countが0の場合は空のセルを意味する
-      return newInput;
-    });
-  };
+      // ボムを配置
+      let bombsPlaced = 0;
+      while (bombsPlaced < bombCount) {
+        const bombx = Math.floor(Math.random() * 9);
+        const bomby = Math.floor(Math.random() * 9);
 
-  const addZeroAroundZero = (x: number, y: number) => {
-    setUserInput((prev) => {
-      const newInput = [...prev];
-      newInput[y][x] = 1;
-      return newInput;
-    });
-
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dy = -1; dy <= 1; dy++) {
-        const nx = x + dx;
-        const ny = y + dy;
-
-        if (
-          nx >= 0 &&
-          nx < 9 &&
-          ny >= 0 &&
-          ny < 9 &&
-          userInput[ny][nx] === 0 &&
-          countBombsAround(nx, ny) === 0
-        ) {
-          addZeroAroundZero(nx, ny);
+        if (bombMap[bomby][bombx] === 0 && userInput[bomby][bombx] === 0){
+          bombMap[bomby][bombx] = 1;
+          bombsPlaced += 1;
         }
       }
     }
-  };
+
+    if (userInput[y][x] === 1 && bombMap[y][x] === 1){
+      for(const bomblist of bombMap){
+        for (const bomb of bomblist){
+          if (bomb === 1){
+            // 爆弾表示
+          }
+        }
+      }
+      //顔変える、(タイマー止める(後回し))、クリックした爆弾の背景赤くする
+      isFailure = true;
+      return;
+    }
+
+
+  }
+
+  const reset = () => ...
+
+
+
+
 
   return (
     <div className={styles.container}>
-      <div className={styles.board}>
-        {userInput.map((row, y) =>
-          row.map((cell, x) => (
-            <div className={styles.cell} key={`${x}-${y}`} onClick={() => onClick(x, y)}>
-              {cell !== 0 &&
-                (cell === 1 ? <div className={styles.stone} /> : <div>{cell - 1}</div>)}
-            </div>
-          ))
-        )}
-      </div>
-    </div>
-  );
-};
+      <div className={styles.board}></div>
+      </div>)
+}
 
 export default Home;
+
