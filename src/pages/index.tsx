@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './index.module.css';
+import { count } from 'console';
 
 const Home = () => {
   //0 -> 未クリック
@@ -57,8 +58,8 @@ const Home = () => {
   ];
 
 
-  let zeroList: { x: number; y: number }[]
-  //爆弾のないマスまとめ
+  let zeroList: { x: number; y: number }[] = []; //bombMap[y][x] = 0の座標を全部入れたい
+    //爆弾のないマスまとめ
   for () {
     zeroList = // board + directions + userInputs + bombMap
   } 
@@ -84,7 +85,17 @@ const Home = () => {
   //以下が実装したい関数
 
 
-  const addZeroAroundZero = (hoge: fuga) => ... // 再帰関数
+  const addZeroAroundZero = (x:number, y:number) => {
+    for (const [dx, dy] of directions){
+      const newX = x + dx;
+      const newY = y + dy;
+
+      if(zeroList.find(element => element.x == newX) && zeroList.find(element => element.y == newY)){ //newXとxが一致している、yも同様
+        //表示処理
+        addZeroAroundZero(newX, newY);
+      } 
+    }
+  } // 再帰関数 //隣接している0を全て開けたい
 
   // ボムの数をカウント
   const countBombsAround = (x: number, y: number) => {
@@ -97,12 +108,13 @@ const Home = () => {
       // セルの範囲チェック
       if (newX >= 0 && newX < userInput[0].length && newY >= 0 && newY < userInput.length) {
         // ボムセルか判定
-        if (bombMap[newY][newX] === 11) {
+        if (bombMap[newY][newX] === 1) {
           count++;
         }
       }
     }
-  }
+    return count;
+  };
 
   const clickStone = (x: number, y: number) => {
     // isFailureがtrueなら終了
@@ -124,7 +136,14 @@ const Home = () => {
           bombsPlaced += 1;
         }
       }
-    }
+      for(let tempy:number = 0; tempy < bombMap.length; tempy++){
+        for (let tempx:number = 0; tempx < bombMap[tempy].length; tempx++){
+          if (countBombsAround(tempx, tempy) === 0){
+          zeroList.push({ x: tempx, y: tempx});
+          //bombMap[y][x] = 0の座標を全部入れたい
+          }
+        }
+     }
 
     if (userInput[y][x] === 1 && bombMap[y][x] === 1){
       for(const bomblist of bombMap){
@@ -138,7 +157,12 @@ const Home = () => {
       isFailure = true;
       return;
     }
-
+    let aroundbomb = countBombsAround(x, y);
+    if (aroundbomb === 0){
+      addZeroAroundZero(x, y); //全部の隣接しているゼロを表示
+    }else{
+      userInput[y][x] = ;//押したところの数字を変更
+    }
 
   }
 
