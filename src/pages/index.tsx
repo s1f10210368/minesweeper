@@ -143,7 +143,7 @@ const Home = () => {
     if (isFailure === true) {
       return;
     }
-    userInput[y][x] = 2;
+    userInput[y][x] = 1;
     if (isStarted === false) {
       isStarted = true;
 
