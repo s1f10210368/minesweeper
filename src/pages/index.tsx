@@ -89,14 +89,24 @@ const Home = () => {
       if (newX >= 9 || newY >= 9 || newX < 0 || newY < 0) {
         continue;
       }
-
+      const kakikukeko = document.getElementById(`${newX}-${newY}`);
       for (let i = 0; i < zeroList.length; i++) {
         if (newX === zeroList[i].x && newY === zeroList[i].y) {
           zeroList.splice(i, 1);
+          //0の周りの数字を出したい
           userInput[newY][newX] = 1;
+          kakikukeko.style.backgroundColor = 'black';
           addZeroAroundZero(newX, newY);
           break;
         }
+      }
+      if (userInput[newY][newX] === 0) {
+        const aroundbomb = countBombsAround(newX, newY);
+        kakikukeko.classList.add(styles.stone);
+        kakikukeko.style.position = 'relative';
+        kakikukeko.style.left = `${(aroundbomb - 1) * -30}px`;
+        kakikukeko.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
+        kakikukeko.style.width = `${aroundbomb * 30}px`;
       }
     }
   }; // 再帰関数 //隣接している0を全て開けたい
@@ -126,9 +136,11 @@ const Home = () => {
 
   const clickStone = (x: number, y: number) => {
     console.log(x, y);
+    if (userInput[y][x] !== 0) {
+      return;
+    }
     // isFailureがtrueなら終了
     if (isFailure === true) {
-      console.log('isFailure');
       return;
     }
     userInput[y][x] = 2;
@@ -149,7 +161,7 @@ const Home = () => {
       for (let tempy = 0; tempy < bombMap.length; tempy++) {
         for (let tempx = 0; tempx < bombMap[tempy].length; tempx++) {
           if (countBombsAround(tempx, tempy) === 0) {
-            zeroList.push({ x: tempx, y: tempx });
+            zeroList.push({ x: tempx, y: tempy });
             //bombMap[y][x] = 0の座標を全部入れたい
           }
         }
@@ -157,11 +169,12 @@ const Home = () => {
     }
     const aroundbomb = countBombsAround(x, y);
     window.alert(aroundbomb);
+    const aiueo = document.getElementById(`${x}-${y}`);
     if (aroundbomb === 0) {
       addZeroAroundZero(x, y); //全部の隣接しているゼロを表示
+      aiueo.style.backgroundColor = 'black';
     } else {
       // userInput[y][x] = ;//押したところの数字を変更
-      const aiueo = document.getElementById(`${x}-${y}`);
       aiueo.classList.add(styles.stone);
       aiueo.style.position = 'relative';
       aiueo.style.left = `${(aroundbomb - 1) * -30}px`;
@@ -169,20 +182,27 @@ const Home = () => {
       aiueo.style.width = `${aroundbomb * 30}px`;
     }
     if (bombMap[y][x] === 1) {
-      for (const bomblist of bombMap) {
-        for (const bomb of bomblist) {
-          if (bomb === 1) {
+      for (let i = 0; i < bombMap.length; i++) {
+        for (let s = 0; s < bombMap[i].length; s++) {
+          if (bombMap[i][s] === 1) {
             // 爆弾表示
+            const sasisuseso = document.getElementById(`${s}-${i}`);
+            sasisuseso.classList.add(styles.stone);
+            sasisuseso.style.position = 'relative';
+            sasisuseso.style.left = `${(aroundbomb - 1) * -30}px`;
+            sasisuseso.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
+            sasisuseso.style.width = `${aroundbomb * 30}px`;
           }
         }
       }
       //顔変える、(タイマー止める(後回し))、クリックした爆弾の背景赤くする
       isFailure = true;
+      aiueo.style.backgroundColor = 'red';
       window.alert('bakuhatu');
       return;
-    }
 
-    //const reset = () =>// ...
+      //const reset = () =>// ...
+    }
   };
 
   return (

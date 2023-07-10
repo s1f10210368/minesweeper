@@ -125,8 +125,8 @@
 }
 
 .board {
-  width: 360px;
-  height: 360px;
+  width: 278px;
+  height: 278px;
   background-color: darkgray;
   margin: 0 auto;
   display: flex;
@@ -134,7 +134,12 @@
 }
 
 .cell {
-  width: calc(360px / 9);
-  height: calc(360px / 9);
+  width: calc(278px / 9);
+  height: calc(278px / 9);
   border: 1px solid black;
+}
+
+.cell div {
+  width: 100%;
+  height: 100%;
 }
