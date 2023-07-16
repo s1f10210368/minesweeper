@@ -33,6 +33,18 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
+  const board = [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+  ];
+
   //ゲーム開始
   const isPlaying = userInput.some((row) => row.some((input) => input !== 0));
 
@@ -42,7 +54,6 @@ const Home = () => {
   // 9 -> 石＋はてな
   // 10 -> 石＋旗
   // 11 -> ボムセル
-  const board: number[][] = Array.from({ length: 9 });
 
   //8方向辞書
   const directions = [
@@ -95,13 +106,14 @@ const Home = () => {
           zeroList.splice(i, 1);
           //0の周りの数字を出したい
           userInput[newY][newX] = 1;
-          kakikukeko.style.backgroundColor = 'black';
+          kakikukeko.classList.remove(styles.stonepanel);
           addZeroAroundZero(newX, newY);
           break;
         }
       }
       if (userInput[newY][newX] === 0) {
         const aroundbomb = countBombsAround(newX, newY);
+        kakikukeko.classList.remove(styles.stonepanel);
         kakikukeko.classList.add(styles.stone);
         kakikukeko.style.position = 'relative';
         kakikukeko.style.left = `${(aroundbomb - 1) * -30}px`;
@@ -172,9 +184,9 @@ const Home = () => {
     const aiueo = document.getElementById(`${x}-${y}`);
     if (aroundbomb === 0) {
       addZeroAroundZero(x, y); //全部の隣接しているゼロを表示
-      aiueo.style.backgroundColor = 'black';
     } else {
       // userInput[y][x] = ;//押したところの数字を変更
+      aiueo.classList.remove(styles.stonepanel);
       aiueo.classList.add(styles.stone);
       aiueo.style.position = 'relative';
       aiueo.style.left = `${(aroundbomb - 1) * -30}px`;
@@ -187,6 +199,7 @@ const Home = () => {
           if (bombMap[i][s] === 1) {
             // 爆弾表示
             const sasisuseso = document.getElementById(`${s}-${i}`);
+            sasisuseso.classList.remove(styles.stonepanel);
             sasisuseso.classList.add(styles.stone);
             sasisuseso.style.position = 'relative';
             sasisuseso.style.left = `${(aroundbomb - 1) * -30}px`;
@@ -211,7 +224,8 @@ const Home = () => {
         {userInput.map((row, y) =>
           row.map((cell, x) => (
             <div className={styles.cell} key={`${x}-${y}`} onClick={() => clickStone(x, y)}>
-              <div id={`${x}-${y}`} />
+              {cell !== 0 && <div id={`${x}-${y}`} />}
+              {cell === 0 && <div id={`${x}-${y}`} className={styles.stonepanel} />}
             </div>
           ))
         )}
