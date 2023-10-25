@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from '../components/cell.module.css';
 
 export const useGame = () => {
-  const [userInput, setUserInput] = useState<(0 | 1 | 2 | 3)[][]>([
+  const [userInput] = useState<(0 | 1 | 2 | 3)[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -16,7 +16,7 @@ export const useGame = () => {
   const bombCount = 10;
   // 0 -> ボムなし
   // 1 -> ボム有
-  const [bombMap, setBombMap] = useState([
+  const [bombMap] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -29,7 +29,6 @@ export const useGame = () => {
   ]);
 
   //ゲーム開始
-  const isPlaying = userInput.some((row) => row.some((input) => input !== 0));
 
   // -1 -> 石
   // 0 -> 画像なしセル
