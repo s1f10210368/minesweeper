@@ -82,29 +82,39 @@ export const useGame = () => {
       if (newX >= 9 || newY >= 9 || newX < 0 || newY < 0) {
         continue;
       }
+
+      // 対応するHTML要素を取得
       const kakikukeko = document.getElementById(`${newX}-${newY}`);
+
       for (let i = 0; i < zeroList.length; i++) {
         if (newX === zeroList[i].x && newY === zeroList[i].y) {
           zeroList.splice(i, 1);
-          //0の周りの数字を出したい
           userInput[newY][newX] = 1;
-          kakikukeko.classList.remove(styles.stonepanel);
-          addZeroAroundZero(newX, newY);
+
+          // null チェックを行う
+          if (kakikukeko) {
+            kakikukeko.classList.remove(styles.stonepanel);
+            addZeroAroundZero(newX, newY);
+          }
           break;
         }
       }
+
       if (userInput[newY][newX] === 0) {
         const aroundbomb = countBombsAround(newX, newY);
-        kakikukeko.classList.remove(styles.stonepanel);
-        kakikukeko.classList.add(styles.stone);
-        kakikukeko.style.position = 'relative';
-        kakikukeko.style.left = `${(aroundbomb - 1) * -30}px`;
-        kakikukeko.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
-        kakikukeko.style.width = `${aroundbomb * 30}px`;
+
+        // null チェックを行い、処理をスキップしない
+        if (kakikukeko) {
+          kakikukeko.classList.remove(styles.stonepanel);
+          kakikukeko.classList.add(styles.stone);
+          kakikukeko.style.position = 'relative';
+          kakikukeko.style.left = `${(aroundbomb - 1) * -30}px`;
+          kakikukeko.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
+          kakikukeko.style.width = `${aroundbomb * 30}px`;
+        }
       }
     }
-  }; // 再帰関数 //隣接している0を全て開けたい
-
+  };
   // ボムの数をカウント
   const countBombsAround = (x: number, y: number) => {
     let count = 0;
@@ -167,12 +177,14 @@ export const useGame = () => {
     if (aroundbomb === 0) {
       addZeroAroundZero(x, y); //全部の隣接しているゼロを表示
     } else {
-      aiueo.classList.remove(styles.stonepanel);
-      aiueo.classList.add(styles.stone);
-      aiueo.style.position = 'relative';
-      aiueo.style.left = `${(aroundbomb - 1) * -30}px`;
-      aiueo.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
-      aiueo.style.width = `${aroundbomb * 30}px`;
+      if (aiueo) {
+        aiueo.classList.remove(styles.stonepanel);
+        aiueo.classList.add(styles.stone);
+        aiueo.style.position = 'relative';
+        aiueo.style.left = `${(aroundbomb - 1) * -30}px`;
+        aiueo.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
+        aiueo.style.width = `${aroundbomb * 30}px`;
+      }
     }
     if (bombMap[y][x] === 1) {
       for (let i = 0; i < bombMap.length; i++) {
@@ -180,18 +192,22 @@ export const useGame = () => {
           if (bombMap[i][s] === 1) {
             // 爆弾表示
             const sasisuseso = document.getElementById(`${s}-${i}`);
-            sasisuseso.classList.remove(styles.stonepanel);
-            sasisuseso.classList.add(styles.stone);
-            sasisuseso.style.position = 'relative';
-            sasisuseso.style.left = `${(aroundbomb - 1) * -30}px`;
-            sasisuseso.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
-            sasisuseso.style.width = `${aroundbomb * 30}px`;
+            if (sasisuseso) {
+              sasisuseso.classList.remove(styles.stonepanel);
+              sasisuseso.classList.add(styles.stone);
+              sasisuseso.style.position = 'relative';
+              sasisuseso.style.left = `${(aroundbomb - 1) * -30}px`;
+              sasisuseso.style.clipPath = `inset(0 0 0 ${(aroundbomb - 1) * 30}px)`;
+              sasisuseso.style.width = `${aroundbomb * 30}px`;
+            }
           }
         }
       }
       //顔変える、(タイマー止める(後回し))、クリックした爆弾の背景赤くする
       isFailure = true;
-      aiueo.style.backgroundColor = 'red';
+      if (aiueo) {
+        aiueo.style.backgroundColor = 'red';
+      }
       window.alert('bakuhatu');
       return;
     }
