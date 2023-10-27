@@ -7,7 +7,7 @@ const Home = () => {
   //2 -> はてな
   //3 -> 旗
 
-  const [userInput, setUserInput] = useState<(0 | 1 | 2 | 3)[][]>([
+  const [userInput, setUserInput] = useState<(0 | 1 | 2 | 3 | 11)[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from '../components/cell.module.css';
 
 export const useGame = () => {
-  const [userInput] = useState<(0 | 1 | 2 | 3)[][]>([
+  const [userInput] = useState<(0 | 1 | 2 | 3 | 11)[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
