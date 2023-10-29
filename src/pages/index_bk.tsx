@@ -131,7 +131,7 @@ const Home = () => {
     // ユーザー入力にボムの数を設定
     setUserInput((prev) => {
       const newInput = [...prev];
-      newInput[y][x] = count + 1; // countが0の場合は空のセルを意味する
+      newInput[y][x] = count + 1; // countが0の場合は空のセルを意味する //修正必要
       return newInput;
     });
   };
